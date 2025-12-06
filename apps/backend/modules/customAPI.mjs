@@ -216,9 +216,19 @@ const customAPI = {
 
                 fs.writeFileSync(tempInput, Buffer.from(audioBuffer));
 
+                // Resolve FFmpeg path
+                let ffmpegPath = "ffmpeg"; // Default to global PATH
+                if (process.platform === "win32") {
+                    const localFfmpeg = path.join(__dirname, "..", "..", "..", "bin", "ffmpeg.exe");
+                    if (fs.existsSync(localFfmpeg)) ffmpegPath = localFfmpeg;
+                } else {
+                    const localFfmpeg = path.join(__dirname, "..", "..", "..", "bin", "ffmpeg");
+                    if (fs.existsSync(localFfmpeg)) ffmpegPath = localFfmpeg;
+                }
+
                 // Convert to 16kHz Mono WAV (Vosk requirement)
                 // Added -vn to ignore video stream if present (e.g. from some recorders)
-                const ffmpegCommand = `ffmpeg -y -i "${tempInput}" -vn -ac 1 -ar 16000 -f wav "${tempOutput}"`;
+                const ffmpegCommand = `"${ffmpegPath}" -y -i "${tempInput}" -vn -ac 1 -ar 16000 -f wav "${tempOutput}"`;
 
                 exec(ffmpegCommand, (error, stdout, stderr) => {
                     if (error) {
