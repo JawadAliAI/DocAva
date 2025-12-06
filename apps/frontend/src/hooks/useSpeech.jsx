@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const getBackendUrl = () => {
-  // For localhost development
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-    return ""; // Use Vite proxy
-  }
-  // For Cloudflare Tunnel - Direct Backend Access
-  return "https://accept-whom-chain-implications.trycloudflare.com";
+  return import.meta.env.VITE_API_URL || "";
 };
 
 const backendUrl = getBackendUrl();
