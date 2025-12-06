@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+.env
+.DS_Store
+coverage
+.vscode
+apps/backend/tmp
+apps/backend/audios/*.wav
+apps/backend/audios/*.mp3
+apps/backend/audios/*.json
+!apps/backend/audios/.keep
+bin

@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs", "python3", "python3Packages.pip"]
+
+[phases.install]
+cmds = ["cd apps/backend && npm install"]
+
+[phases.build]
+cmds = ["cd apps/backend && pip install edge-tts"]
+
+[start]
+cmd = "cd apps/backend && node server.js"

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microphone Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .error {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .success {
+            color: #388e3c;
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎤 Microphone Diagnostic Tool</h1>
+    
+    <div class="card">
+        <h2>Environment Info</h2>
+        <div id="env-info"></div>
+    </div>
+
+    <div class="card">
+        <h2>Test 1: MediaDevices API</h2>
+        <button onclick="testMediaDevices()">Test MediaDevices</button>
+        <div id="media-result"></div>
+    </div>
+
+    <div class="card">
+        <h2>Test 2: Web Speech API</h2>
+        <button onclick="testWebSpeech()">Test Web Speech</button>
+        <div id="speech-result"></div>
+    </div>
+
+    <script>
+        // Display environment info
+        const envInfo = document.getElementById('env-info');
+        envInfo.innerHTML = `
+            <pre>
+URL: ${window.location.href}
+Protocol: ${window.location.protocol}
+Hostname: ${window.location.hostname}
+Port: ${window.location.port}
+User Agent: ${navigator.userAgent}
+
+navigator.mediaDevices: ${typeof navigator.mediaDevices !== 'undefined' ? '✅ Available' : '❌ Not Available'}
+navigator.mediaDevices.getUserMedia: ${navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia !== 'undefined' ? '✅ Available' : '❌ Not Available'}
+SpeechRecognition: ${(window.SpeechRecognition || window.webkitSpeechRecognition) ? '✅ Available' : '❌ Not Available'}
+            </pre>
+        `;
+
+        async function testMediaDevices() {
+            const resultDiv = document.getElementById('media-result');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('MediaDevices API is not available');
+                }
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                resultDiv.innerHTML = '<div class="success">✅ SUCCESS! Microphone access granted via MediaDevices API</div>';
+                
+                // Stop the stream
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ ERROR: ${error.name} - ${error.message}</div>`;
+                
+                if (error.name === 'NotAllowedError') {
+                    resultDiv.innerHTML += `
+                        <div class="info">
+                            <strong>Permission Denied!</strong><br>
+                            Please allow microphone access:<br>
+                            1. Click the lock/camera icon in the address bar<br>
+                            2. Set Microphone to "Allow"<br>
+                            3. Refresh and try again
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function testWebSpeech() {
+            const resultDiv = document.getElementById('speech-result');
+            resultDiv.innerHTML = '<p>Testing... Please speak when prompted.</p>';
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                resultDiv.innerHTML = '<div class="error">❌ Web Speech API is not available in this browser</div>';
+                return;
+            }
+            
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                resultDiv.innerHTML = '<div class="success">🎤 Listening... Please speak now!</div>';
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                resultDiv.innerHTML = `<div class="success">✅ SUCCESS! You said: "${transcript}"</div>`;
+            };
+            
+            recognition.onerror = (event) => {
+                resultDiv.innerHTML = `<div class="error">❌ ERROR: ${event.error}</div>`;
+                
+                if (event.error === 'not-allowed') {
+                    resultDiv.innerHTML += `
+                        <div class="info">
+                            <strong>Permission Denied!</strong><br>
+                            Please allow microphone access:<br>
+                            1. Click the lock/camera icon in the address bar<br>
+                            2. Set Microphone to "Allow"<br>
+                            3. Refresh and try again<br><br>
+                            <strong>Important:</strong> If using a tunnel URL, try accessing via http://localhost:5174 instead
+                        </div>
+                    `;
+                }
+            };
+            
+            recognition.onend = () => {
+                console.log('Recognition ended');
+            };
+            
+            try {
+                recognition.start();
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ ERROR: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: prowell-avatar
+    runtime: node
+    plan: free
+    buildCommand: ./render-build.sh
+    startCommand: npm start
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: GEMINI_API_KEY
+        sync: false

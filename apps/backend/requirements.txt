@@ -1,0 +1,7 @@
+gTTS>=2.3.0
+edge-tts
+faster-whisper
+g2p_en
+nltk
+numpy
+
