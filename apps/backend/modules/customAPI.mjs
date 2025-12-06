@@ -22,7 +22,11 @@ const startSttService = () => {
     const pythonCommand = process.platform === "win32" ? "python" : "python3";
     const scriptPath = path.join(__dirname, "..", "utils", "stt_whisper_service.py");
 
-    sttService = spawn(pythonCommand, [scriptPath]);
+    // Define pylib path and add to PYTHONPATH
+    const pylibPath = path.join(__dirname, "..", "..", "..", "pylib");
+    const env = { ...process.env, PYTHONPATH: process.env.PYTHONPATH ? `${process.env.PYTHONPATH}${path.delimiter}${pylibPath}` : pylibPath };
+
+    sttService = spawn(pythonCommand, [scriptPath], { env });
 
     sttService.stdout.on("data", (data) => {
         const lines = data.toString().split("\n");
@@ -157,7 +161,7 @@ const customAPI = {
                 const pythonCommand = process.platform === "win32" ? "python" : "python3";
                 // PYTHONPATH is usually handled by dev environment or not needed for installed packages, but keeping it safe
                 const pylibPath = path.join(__dirname, "..", "..", "..", "pylib");
-                const env = { ...process.env, PYTHONPATH: process.env.PYTHONPATH ? `${process.env.PYTHONPATH}:${pylibPath}` : pylibPath };
+                const env = { ...process.env, PYTHONPATH: process.env.PYTHONPATH ? `${process.env.PYTHONPATH}${path.delimiter}${pylibPath}` : pylibPath };
 
                 const voice = "en-GB-ThomasNeural"; // Male voice (British)
                 const pythonProcess = spawn(pythonCommand, [ttsScript, text, tempFile, voice], { env });
