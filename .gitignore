@@ -11,3 +11,27 @@ apps/backend/audios/*.mp3
 apps/backend/audios/*.json
 !apps/backend/audios/.keep
 bin
+
+# Piper TTS files
+apps/backend/piper_bin/
+apps/backend/piper_windows.zip
+apps/backend/models/piper/*.onnx
+apps/backend/models/piper/*.onnx.json
+
+# Test files
+apps/backend/test_*.py
+apps/backend/test_*.wav
+apps/backend/debug_*.py
+apps/backend/download_*_model.py
+apps/backend/download_piper_bin.py
+
+# Firebase service account (sensitive)
+apps/backend/serviceAccountKey.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+

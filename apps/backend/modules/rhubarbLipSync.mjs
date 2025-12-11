@@ -43,22 +43,30 @@ const getPhonemes = async ({ message, messageText = "Hello" }) => {
 
         console.log(`Looking for Rhubarb at: ${rhubarbPath}`);
 
-        let useRhubarb = fs.existsSync(rhubarbPath);
+        // Disable Rhubarb for faster processing - use phonetic fallback instead
+        let useRhubarb = false; // fs.existsSync(rhubarbPath);
 
         if (!useRhubarb) {
-            console.warn(`⚠️ Rhubarb executable not found at ${rhubarbPath}. Will use phonetic fallback.`);
+            console.warn(`⚠️ Using fast phonetic lip sync (Rhubarb disabled for speed).`);
         }
 
         if (useRhubarb) {
             try {
                 // Try to run Rhubarb
-                // Clean text for command line (basic escaping)
-                const safeText = messageText.replace(/"/g, '\\"').replace(/\n/g, " ");
+                // For Windows, we need to write the dialog to a temp file to avoid command-line escaping issues
+                const dialogFile = path.join(audiosDir, `dialog_${message}.txt`);
+                fs.writeFileSync(dialogFile, messageText, 'utf8');
 
-                // Try to run Rhubarb with Dialog for better accuracy
+                // Try to run Rhubarb with Dialog file for better accuracy
                 await execCommand({
-                    command: `"${rhubarbPath}" -f json -o "${jsonFile}" "${wavFile}" -d "${safeText}"`,
+                    command: `"${rhubarbPath}" -f json -o "${jsonFile}" "${wavFile}" --dialogFile "${dialogFile}"`,
                 });
+
+                // Clean up dialog file
+                if (fs.existsSync(dialogFile)) {
+                    fs.unlinkSync(dialogFile);
+                }
+
                 console.log(`✅ Rhubarb lip sync done in ${new Date().getTime() - time}ms`);
                 return; // Success, exit early
             } catch (error) {

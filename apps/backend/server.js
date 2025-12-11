@@ -106,13 +106,18 @@ app.post("/tts", async (req, res) => {
 
     console.log(`Selected animation: ${selectedAnimation}, expression: ${selectedExpression}`);
 
-    const messages = [
-      {
-        text: botResponseText,
-        facialExpression: selectedExpression,
-        animation: selectedAnimation,
-      },
-    ];
+    // Split text into sentences for better pacing
+    // Match periods, exclamation marks, or question marks followed by space or end of string.
+    // Keep the delimiter.
+    const sentences = botResponseText.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [botResponseText];
+
+    const messages = sentences.map((sentence, index) => ({
+      text: sentence.trim(),
+      facialExpression: selectedExpression,
+      animation: index === 0 ? selectedAnimation : "Talking", // Keep animation dynamic or simple for subsequent parts
+    })).filter(m => m.text.length > 0);
+
+    console.log(`Split response into ${messages.length} messages.`);
 
     // 3. Generate Audio & LipSync
     const lipSyncStart = performance.now();
@@ -167,13 +172,16 @@ app.post("/sts", async (req, res) => {
 
     console.log(`Selected animation: ${selectedAnimation}, expression: ${selectedExpression}`);
 
-    const messages = [
-      {
-        text: botResponseText,
-        facialExpression: selectedExpression,
-        animation: selectedAnimation,
-      },
-    ];
+    // Split text into sentences for better pacing
+    const sentences = botResponseText.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [botResponseText];
+
+    const messages = sentences.map((sentence, index) => ({
+      text: sentence.trim(),
+      facialExpression: selectedExpression,
+      animation: index === 0 ? selectedAnimation : "Talking", // Keep animation dynamic or simple for subsequent parts
+    })).filter(m => m.text.length > 0);
+
+    console.log(`Split response into ${messages.length} messages.`);
 
     // 4. Generate Audio & LipSync
     const lipSyncStart = performance.now();

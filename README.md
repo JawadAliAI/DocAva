@@ -1,151 +1,199 @@
-# 🤖 Digital Human Avatar (DocAva) - Complete Setup & Deployment Guide
+# DocAva - AI Medical Consultation Avatar
 
-Welcome to the **Digital Human Avatar** project! This is a state-of-the-art conversational AI system that combines a 3D animated frontend with a powerful backend intelligence.
+A fully local, GPU-accelerated AI avatar for medical consultations with real-time speech-to-text, text-to-speech, and lip-sync capabilities.
 
----
+## Features
 
-## 🌟 Features Overview
+- 🎤 **Local Speech-to-Text**: GPU-accelerated Whisper for fast, accurate transcription
+- 🗣️ **Local Text-to-Speech**: Piper TTS with persistent process for low-latency voice synthesis
+- 💬 **Local LLM Integration**: Connect to your local language model endpoint
+- 👄 **Fast Lip-Sync**: Phonetic-based lip synchronization for natural mouth movements
+- 🎭 **Animated Avatar**: Emotion-aware animations and facial expressions
+- 🔒 **100% Private**: All processing happens locally - no cloud dependencies
 
-| Feature | Technology | Description |
-| :--- | :--- | :--- |
-| **Interactive 3D User Interface** | **React + Three.js** | A high-quality 3D avatar that responds to you in real-time. |
-| **Generative AI Brain** | **Google Gemini** | Uses advanced Large Language Models (LLM) to understand context and provide intelligent replies. |
-| **Voice Cloning (TTS)** | **Edge TTS** | High-quality, neural text-to-speech generation that sounds nearly human. |
-| **Speech Recognition (STT)** | **Whisper AI** | Transcribes your voice into text accurately using OpenAI's Whisper model (running locally). |
-| **Realistic Lip Sync** | **Rhubarb** | Automatically synchronizes the avatar's mouth movements with the generated audio. |
+## Tech Stack
 
----
+### Backend
+- **Node.js** + Express
+- **Python** for AI services
+- **Whisper** (faster-whisper) for STT with CUDA support
+- **Piper TTS** for voice synthesis
+- **Phonetic Lip-Sync** for mouth animation
 
-## 📂 Project Architecture
+### Frontend
+- **React** + Vite
+- **Three.js** for 3D avatar rendering
+- **Tailwind CSS** for styling
 
-The project is a "Monorepo" containing both frontend and backend:
+## Prerequisites
 
-*   **`apps/frontend`**:
-    *   Built with Vite, React, and React-Three-Fiber.
-    *   Handles the 3D scene, microphone input, and visualizing the "Thinking" state.
-*   **`apps/backend`**:
-    *   Built with Node.js and Express.
-    *   **Server**: Listens for API requests (`/chat`, `/tts`, `/sts`).
-    *   **Orchestrator**: Calls Python scripts for heavy AI tasks (TTS/STT).
-*   **`apps/backend/utils`**:
-    *   Contains Python scripts (`tts_edge.py`, `stt_whisper.py`) that do the heavy lifting.
-*   **Root Files**:
-    *   `render-build.sh`: A custom script that installs Python, FFmpeg, and Rhubarb on the cloud.
-    *   `start_local_clean.ps1`: One-click script to run everything on Windows.
+- **Node.js** 18+ and npm/yarn
+- **Python** 3.8+
+- **NVIDIA GPU** with CUDA support (recommended for best performance)
+- **FFmpeg** installed and in PATH
+- **Local LLM** endpoint (default: `http://127.0.0.1:8000`)
 
----
+## Installation
 
-## 💻 Local Development Guide (Windows)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/DocAva.git
+cd DocAva
+```
 
-Use this section to run the application on your own computer for testing or development.
-
-### 1. Prerequisites (Install These First)
-1.  **Node.js (v18 or higher)**
-    *   Download: [https://nodejs.org/](https://nodejs.org/)
-    *   *Check*: Open terminal and run `node -v`
-2.  **Python (v3.10 or v3.11)**
-    *   Download: [https://www.python.org/downloads/](https://www.python.org/downloads/)
-    *   ⚠️ **CRITICAL**: Check the box **"Add Python to PATH"** in the installer.
-    *   *Check*: Run `python --version`
-3.  **FFmpeg (Required for Audio Processing)**
-    *   Download: [https://www.gyan.dev/ffmpeg/builds/](https://www.gyan.dev/ffmpeg/builds/) (Get the "essentials" build).
-    *   Action: Extract the zip, copy the path to the `bin` folder (e.g., `C:\ffmpeg\bin`), and add it to your System Environment Variables -> Path.
-    *   *Check*: Run `ffmpeg -version`
-
-### 2. Installation Steps
-Open **PowerShell** in the `DocAva` folder and run:
-```powershell
-# 1. Install root dependencies
+### 2. Install Backend Dependencies
+```bash
+cd apps/backend
 npm install
-
-# 2. Install Frontend dependencies
-cd apps/frontend
-npm install
-
-# 3. Install Backend dependencies
-cd ../backend
-npm install
-
-# 4. Install Python AI Libraries
 pip install -r requirements.txt
 ```
 
-### 3. Running the Application
-We have a simplified script that handles everything:
-```powershell
-.\start_local_clean.ps1
-```
-*   This will start the **Backend** (on port 3000).
-*   This will start the **Frontend** (on port 5173).
-*   It will automatically open your browser to `http://localhost:5173`.
-
----
-
-## ☁️ Deployment Guide: Publishing to the Web (Self-Hosted via Cloudflare Tunnel)
-
-This is the fastest and easiest way to share your application with the world entirely for **FREE**.
-
-Instead of uploading your code to a slow cloud server, we use a "Tunnel" to securely expose the application running on your powerful local computer to the internet.
-
-### Advantages
-*   **Zero Cost**: No server fees.
-*   **High Performance**: Uses your local GPU/CPU (much faster for AI).
-*   **Instant Updates**: Changes you make locally are instantly live.
-
-### Step-by-Step Guide
-
-#### 1. Requirements
-*   Ensure the application works locally first (see above).
-*   No account signup is strictly required for testing (Quick Tunnels).
-
-#### 2. Start the Public Tunnel
-We have created a specialized script for this. Open PowerShell and run:
-
-```powershell
-.\start_public_test.ps1
+### 3. Install Frontend Dependencies
+```bash
+cd ../frontend
+npm install
 ```
 
-#### 3. What Happens Next?
-1.  The script stops any old processes to ensure a clean slate.
-2.  It re-installs/checks Python dependencies.
-3.  It builds the Frontend for production (optimized speed).
-4.  It starts the Backend server.
-5.  **Finally**, it launches a **Cloudflare Tunnel** and gives you a randomly generated URL.
+### 4. Download Piper TTS Binary and Models
 
-#### 4. Accessing Your App
-*   Look at the terminal output or the `public_tunnel.log` file.
-*   Find the **Public URL**, which looks like:
-    `https://random-words-here.trycloudflare.com`
-*   **Share this link**! Anyone can open it on their phone or laptop to chat with your avatar.
+**Download Piper Binary:**
+```bash
+cd ../backend
+# The binary will be downloaded automatically on first run
+# Or manually download from: https://github.com/rhasspy/piper/releases
+```
 
-#### 5. Important Notes
-*   **Keep the Window Open**: If you close the PowerShell window, the website goes down.
-*   **Temporary URL**: The URL changes every time you restart the script. (To get a permanent URL, you need a free Cloudflare account and use `cloudflared login`).
+**Download Voice Models:**
+The application uses `en_US-danny-low` by default. Download it from:
+- https://huggingface.co/rhasspy/piper-voices/tree/v1.0.0/en/en_US/danny/low
 
+Place the `.onnx` and `.onnx.json` files in `apps/backend/models/piper/`
 
----
+### 5. Configure Environment
 
-## 🛠 Troubleshooting & Maintenance
+Create `apps/backend/.env`:
+```env
+PORT=3000
+# Add any other environment variables as needed
+```
 
-### Common Deployment Errors
+### 6. Setup Local LLM
 
-**1. "Permission Denied" on `./render-build.sh`**
-*   **Cause**: The script file lost its executable permission in Git.
-*   **Fix**: Run this locally in Git Bash: `git update-index --chmod=+x render-build.sh`, then commit and push.
+Ensure your local LLM is running at `http://127.0.0.1:8000` or update the endpoint in `apps/backend/modules/customAPI.mjs`
 
-**2. "ModuleNotFoundError: No module named 'edge_tts' or 'faster_whisper'"**
-*   **Cause**: The Python packages installed in the build step aren't being found.
-*   **Fix**: Ensure your `Build Command` is exactly `./render-build.sh`. This script installs packages to a local `pylib` folder, which the server uses.
+## Running the Application
 
-**3. "FFmpeg not found"**
-*   **Cause**: FFmpeg static build failed to download or extract.
-*   **Fix**: Check the build logs. We download a static Linux binary of FFmpeg. If the download URL changed, update `render-build.sh`.
+### Development Mode
 
-### Modifying the Avatar
-*   To change the 3D model, replace `apps/frontend/public/models/avatar.glb`.
-*   Ensure the expanded GLB file has the required Morph Targets (`viseme_aa`, `viseme_E`, etc.) compatible with the RPM standard.
+**Terminal 1 - Backend:**
+```bash
+cd apps/backend
+node server.js
+```
 
----
+**Terminal 2 - Frontend:**
+```bash
+cd apps/frontend
+npm run dev
+```
 
-## 📜 License
-This project is open-source. Feel free to use and modify!
+Access the application at `http://localhost:5173`
+
+### Production Mode
+
+```bash
+# Build frontend
+cd apps/frontend
+npm run build
+
+# Start backend (serves built frontend)
+cd ../backend
+node server.js
+```
+
+Access the application at `http://localhost:3000`
+
+## Configuration
+
+### Change TTS Voice
+
+Edit `apps/backend/utils/tts_service.py`:
+```python
+PIPER_MODEL_PATH = os.path.join(MODELS_DIR, "piper", "en_US-your-voice.onnx")
+```
+
+### Change LLM Endpoint
+
+Edit `apps/backend/modules/customAPI.mjs`:
+```javascript
+const API_BASE_URL = "http://your-llm-endpoint:port";
+```
+
+### Adjust Whisper Model
+
+Edit `apps/backend/utils/stt_whisper_service.py`:
+```python
+MODEL_SIZE = "base.en"  # Options: tiny, base, small, medium, large
+```
+
+## Performance Optimization
+
+- **GPU Acceleration**: Ensure CUDA is properly installed for Whisper STT
+- **Persistent Piper**: The TTS service keeps the model loaded in memory for fast inference
+- **Sentence Splitting**: Long responses are split into sentences for faster perceived response time
+- **Fast Lip-Sync**: Uses phonetic mapping instead of audio analysis for ~10x faster processing
+
+## Project Structure
+
+```
+DocAva/
+├── apps/
+│   ├── backend/
+│   │   ├── modules/          # Core logic (API, lip-sync)
+│   │   ├── utils/            # Services (TTS, STT)
+│   │   ├── models/           # AI model files
+│   │   ├── audios/           # Generated audio files
+│   │   └── server.js         # Express server
+│   └── frontend/
+│       ├── src/
+│       │   ├── components/   # React components
+│       │   └── hooks/        # Custom hooks
+│       └── public/           # Static assets
+└── package.json
+```
+
+## Troubleshooting
+
+### Port Already in Use
+```bash
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -ti:3000 | xargs kill -9
+```
+
+### CUDA Not Detected
+- Verify NVIDIA drivers are installed
+- Install `onnxruntime-gpu` for Piper: `pip install onnxruntime-gpu`
+- Install CUDA-enabled PyTorch for Whisper
+
+### Slow Performance
+- Use "low" quality Piper models instead of "medium"
+- Use smaller Whisper models (tiny, base)
+- Ensure GPU is being utilized (check task manager/nvidia-smi)
+
+## License
+
+MIT License - See LICENSE file for details
+
+## Acknowledgments
+
+- [Piper TTS](https://github.com/rhasspy/piper) - Fast, local neural text-to-speech
+- [Faster Whisper](https://github.com/guillaumekln/faster-whisper) - Optimized Whisper implementation
+- [Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync) - Lip-sync tool (optional)
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
