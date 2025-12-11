@@ -53,7 +53,14 @@ export const ChatInterface = ({ hidden, ...props }) => {
     }
   };
 
+  const unlockAudio = () => {
+    // Play a tiny silent buffer to unlock audio on mobile
+    const audio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
+    audio.play().catch(e => console.log("Audio unlock failed", e));
+  };
+
   const sendMessage = () => {
+    unlockAudio();
     const text = input.current.value;
     // Use the fetched username, or fallback to demo if not ready/logged in
     const userId = username || (currentUser ? currentUser.uid : "demo_user_123");
@@ -103,9 +110,12 @@ export const ChatInterface = ({ hidden, ...props }) => {
 
         <div className="flex items-center gap-2 w-full">
           <button
-            onClick={recording ? stopRecording : startRecording}
+            onClick={() => {
+              unlockAudio();
+              recording ? stopRecording() : startRecording();
+            }}
             className={`bg-gray-500 hover:bg-gray-600 text-white p-4 px-4 font-semibold uppercase rounded-md relative ${recording ? "bg-red-500 hover:bg-red-600" : ""
-              } ${loading || message ? "cursor-not-allowed opacity-30" : ""}`}
+              } ${loading ? "cursor-not-allowed opacity-30" : ""}`}
           >
             {/* Visual Indicator of Recording */}
             {recording && (
@@ -141,7 +151,7 @@ export const ChatInterface = ({ hidden, ...props }) => {
             }}
           />
           <button
-            disabled={loading || message}
+            disabled={loading}
             onClick={sendMessage}
             className={`bg-gray-500 hover:bg-gray-600 text-white p-4 px-10 font-semibold uppercase rounded-md ${loading || message ? "cursor-not-allowed opacity-30" : ""
               }`}

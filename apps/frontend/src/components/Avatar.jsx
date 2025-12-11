@@ -114,32 +114,58 @@ export function Avatar(props) {
   };
 
   useFrame(() => {
-    // Simplified lip sync
-    let mouthOpenValue = 0;
-    let mouthSmileValue = 0;
+    try {
+      // Simplified lip sync
+      let mouthOpenValue = 0;
+      let mouthSmileValue = 0;
 
-    if (message && lipsync && audio && !audio.paused && !audio.ended) {
-      const currentAudioTime = audio.currentTime;
-      for (let i = 0; i < lipsync.mouthCues.length; i++) {
-        const mouthCue = lipsync.mouthCues[i];
-        if (currentAudioTime >= mouthCue.start && currentAudioTime <= mouthCue.end) {
-          const viseme = mouthCue.value;
-          switch (viseme) {
-            case 'X': mouthOpenValue = 0.0; mouthSmileValue = 0.0; break;
-            case 'A': case 'B': case 'C': mouthOpenValue = 0.5; mouthSmileValue = 0.3; break;
-            case 'D': case 'E': case 'F': mouthOpenValue = 0.8; mouthSmileValue = 0.1; break;
-            case 'G': case 'H': mouthOpenValue = 0.4; mouthSmileValue = 0.6; break;
-            default: mouthOpenValue = 0.3; mouthSmileValue = 0.2;
+      if (message && lipsync && audio && !audio.paused && !audio.ended) {
+        const currentAudioTime = audio.currentTime;
+        for (let i = 0; i < lipsync.mouthCues.length; i++) {
+          const mouthCue = lipsync.mouthCues[i];
+          if (currentAudioTime >= mouthCue.start && currentAudioTime <= mouthCue.end) {
+            const viseme = mouthCue.value;
+            switch (viseme) {
+              case 'X': mouthOpenValue = 0.0; mouthSmileValue = 0.0; break;
+              case 'A': case 'B': case 'C': mouthOpenValue = 0.5; mouthSmileValue = 0.3; break;
+              case 'D': case 'E': case 'F': mouthOpenValue = 0.8; mouthSmileValue = 0.1; break;
+              case 'G': case 'H': mouthOpenValue = 0.4; mouthSmileValue = 0.6; break;
+              default: mouthOpenValue = 0.3; mouthSmileValue = 0.2;
+            }
+            break;
           }
-          break;
         }
       }
-    }
 
-    lerpMorphTarget("mouthOpen", mouthOpenValue, 0.9);
-    lerpMorphTarget("mouthSmile", mouthSmileValue, 0.9);
-    lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
-    lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
+      // Apply calculated values (default 0)
+      lerpMorphTarget("mouthOpen", mouthOpenValue, 0.2);
+      lerpMorphTarget("mouthSmile", mouthSmileValue, 0.2);
+
+      lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
+      lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
+
+
+      const armRotZ = 0;
+      const armRotX = 1.3;
+
+      // Safe update helper
+      const safeRot = (node, x, y, z) => {
+        if (node && !isNaN(x) && !isNaN(y) && !isNaN(z)) {
+          node.rotation.set(x, y, z);
+        }
+      };
+
+      safeRot(nodes.RightArm, armRotX, 0, armRotZ);
+      safeRot(nodes.LeftArm, armRotX, 0, -armRotZ);
+      safeRot(nodes.RightForeArm, 0, 0, 0);
+      safeRot(nodes.LeftForeArm, 0, 0, 0);
+      safeRot(nodes.RightHand, 0, 0, 0);
+      safeRot(nodes.LeftHand, 0, 0, 0);
+
+    } catch (err) {
+      // Prevent useFrame crash from killing the whole render loop
+      console.warn("Avatar useFrame error:", err);
+    }
   });
 
   useControls("FacialExpressions", {
@@ -256,33 +282,34 @@ export function Avatar(props) {
       )}
 
       {audioBlocked && (
-        <Html position={[0, 0, 0]} center zIndexRange={[1000, 1000]}>
-          <div style={{ textAlign: 'center', width: '300px' }}>
+        <Html position={[0, 0, 0]} center style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100000, pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto', background: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <button
               onClick={handlePlayAudio}
               style={{
-                background: 'rgba(255, 50, 50, 1)',
+                background: '#ef4444', // Red-500
                 color: 'white',
-                padding: '16px 32px',
-                borderRadius: '30px',
+                padding: '20px 40px',
+                borderRadius: '50px',
                 border: '4px solid white',
                 cursor: 'pointer',
-                fontSize: '20px',
-                fontWeight: '900',
-                pointerEvents: 'auto',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-                marginBottom: '20px'
+                fontSize: '24px',
+                fontWeight: 'bold',
+                boxShadow: '0 0 20px rgba(239, 68, 68, 0.6)',
+                marginBottom: '16px',
+                whiteSpace: 'nowrap'
               }}
             >
-              🔊 UNMUTE / PLAY
+              🔊 TAP TO SPEAK
             </button>
-            <div style={{ background: 'black', color: 'white', padding: '10px', borderRadius: '8px' }}>
-              Autoplay Blocked. Tap to Enable Audio.
+            <div style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>
+              Auto-play blocked by browser
             </div>
-            {lastError && <div style={{ color: 'red', background: 'white', padding: '5px', marginTop: '5px' }}>{lastError}</div>}
+            {lastError && <div style={{ color: '#fca5a5', marginTop: '10px', fontSize: '12px', maxWidth: '300px' }}>{lastError}</div>}
           </div>
         </Html>
       )}
+
 
     </group>
   );

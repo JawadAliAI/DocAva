@@ -5,3 +5,5 @@ g2p_en
 nltk
 numpy
 
+
+piper-tts

@@ -5,14 +5,18 @@ import time
 from faster_whisper import WhisperModel
 
 # Load the model once at startup
-MODEL_SIZE = "small"  # Options: tiny, base, small, medium, large-v2, large-v3
+MODEL_SIZE = "base.en"  # Optimized for speed (English only)
 print(f"Loading Whisper model: {MODEL_SIZE}...", file=sys.stderr)
 start_load = time.time()
 
 try:
-    # Use CPU with INT8 for speed and compatibility
-    # For GPU: device="cuda", compute_type="float16"
-    model = WhisperModel(MODEL_SIZE, device="cpu", compute_type="int8")
+    # Use GPU if available
+    import torch
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    compute_type = "float16" if device == "cuda" else "int8"
+    
+    print(f"Loading Whisper model on {device} ({compute_type})...", file=sys.stderr)
+    model = WhisperModel(MODEL_SIZE, device=device, compute_type=compute_type)
     print(f"Model loaded in {time.time() - start_load:.2f}s", file=sys.stderr)
 except Exception as e:
     print(f"Error loading Whisper model: {e}", file=sys.stderr)
@@ -37,8 +41,8 @@ for line in sys.stdin:
         # Transcribe the audio
         segments, info = model.transcribe(
             audio_path,
-            beam_size=5,
-            language="en",  # Force English for faster processing
+            beam_size=1,    # Optimize for speed
+            language="en",  # Force English
             condition_on_previous_text=False
         )
         

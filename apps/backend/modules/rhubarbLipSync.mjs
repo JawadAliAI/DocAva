@@ -34,7 +34,8 @@ const getPhonemes = async ({ message, messageText = "Hello" }) => {
 
         let rhubarbPath;
         if (process.platform === "win32") {
-            rhubarbPath = path.resolve(__dirname, "../../../Rhubarb-Lip-Sync-1.14.0-Windows/rhubarb.exe");
+            // Absolute path as requested by User
+            rhubarbPath = "C:\\Users\\JAY\\Music\\DocAva\\Rhubarb-Lip-Sync-1.14.0-Windows\\rhubarb.exe";
         } else {
             // Render / Linux
             rhubarbPath = path.resolve(__dirname, "../../../bin/rhubarb-lip-sync/rhubarb");
@@ -51,8 +52,12 @@ const getPhonemes = async ({ message, messageText = "Hello" }) => {
         if (useRhubarb) {
             try {
                 // Try to run Rhubarb
+                // Clean text for command line (basic escaping)
+                const safeText = messageText.replace(/"/g, '\\"').replace(/\n/g, " ");
+
+                // Try to run Rhubarb with Dialog for better accuracy
                 await execCommand({
-                    command: `"${rhubarbPath}" -f json -o "${jsonFile}" "${wavFile}" -r phonetic`,
+                    command: `"${rhubarbPath}" -f json -o "${jsonFile}" "${wavFile}" -d "${safeText}"`,
                 });
                 console.log(`✅ Rhubarb lip sync done in ${new Date().getTime() - time}ms`);
                 return; // Success, exit early
@@ -94,5 +99,4 @@ const getPhonemes = async ({ message, messageText = "Hello" }) => {
         console.error(`❌ Error generating phonemes for message ${message}:`, error);
     }
 };
-
 export { getPhonemes };

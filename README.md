@@ -1,286 +1,151 @@
-<<<<<<< HEAD
-# 🤖 Talking Avatar with AI
+# 🤖 Digital Human Avatar (DocAva) - Complete Setup & Deployment Guide
 
-An interactive 3D talking avatar powered by AI that can have natural conversations with users. The avatar features realistic lip-sync, facial expressions, and animations.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-
-## ✨ Features
-
-- 🎭 **3D Animated Avatar** - Realistic 3D character with smooth animations
-- 💬 **AI-Powered Conversations** - Natural language chat using custom AI API
-- 🗣️ **Text-to-Speech** - High-quality voice synthesis using Edge TTS
-- 👄 **Lip Sync** - Accurate lip synchronization using Rhubarb Lip Sync
-- 😊 **Facial Expressions** - Dynamic expressions based on conversation context
-- 🎤 **Voice Input** - Browser-based speech recognition (Web Speech API)
-- 🔐 **User Authentication** - Firebase authentication with personalized sessions
-- 📱 **Responsive Design** - Works on desktop and mobile devices
-
-## 🏗️ Architecture
-
-```
-talking-avatar-with-ai/
-├── apps/
-│   ├── backend/          # Express.js API server
-│   │   ├── modules/      # Custom API, lip-sync logic
-│   │   ├── utils/        # TTS utilities
-│   │   └── server.js     # Main server file
-│   └── frontend/         # React + Vite application
-│       ├── src/
-│       │   ├── components/  # Avatar, Chat UI
-│       │   ├── hooks/       # Speech, authentication
-│       │   └── contexts/    # Auth context
-│       └── public/
-│           └── models/      # 3D avatar models
-├── Rhubarb-Lip-Sync-*/  # Lip sync engine
-└── resources/            # Additional resources
-
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+ 
-- Python 3.8+
-- Git
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/talking-avatar-with-ai.git
-   cd talking-avatar-with-ai
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install root dependencies
-   npm install
-
-   # Install backend dependencies
-   cd apps/backend
-   npm install
-
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   ```
-
-3. **Install Python dependencies**
-   ```bash
-   pip install edge-tts
-   ```
-
-4. **Set up environment variables**
-   ```bash
-   # Backend
-   cd apps/backend
-   cp .env.example .env
-   # Edit .env if needed (no variables required for basic setup)
-
-   # Frontend
-   cd ../frontend
-   cp .env.example .env
-   # Edit .env and set VITE_API_URL=http://localhost:3000
-   ```
-
-5. **Run the application**
-
-   **Option 1: Run both services together (from root)**
-   ```bash
-   npm run dev
-   ```
-
-   **Option 2: Run separately**
-   ```bash
-   # Terminal 1 - Backend
-   cd apps/backend
-   npm run dev
-
-   # Terminal 2 - Frontend
-   cd apps/frontend
-   npm run dev
-   ```
-
-6. **Open your browser**
-   - Navigate to `http://localhost:5173`
-   - Start chatting with your avatar!
-
-## 🌐 Deployment
-
-See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
-
-### Quick Deploy Options:
-
-**Backend:** Railway, Render, or Heroku  
-**Frontend:** Vercel, Netlify, or Railway
-
-### Recommended Setup:
-- **Backend** → Railway (includes Python support)
-- **Frontend** → Vercel (optimized for React/Vite)
-
-## 🔧 Configuration
-
-### Custom API
-
-The avatar uses a custom chat API. To change it, edit:
-```javascript
-// apps/backend/modules/customAPI.mjs
-const API_BASE_URL = "https://your-api-url.com";
-```
-
-### Avatar Model
-
-To use a different 3D avatar:
-1. Export your avatar as GLB format
-2. Place in `apps/frontend/public/models/`
-3. Update the path in `Avatar.jsx`
-
-### Voice Settings
-
-Modify TTS voice in:
-```python
-# apps/backend/utils/tts.py
-voice = "en-US-AriaNeural"  # Change to your preferred voice
-```
-
-## 📚 Tech Stack
-
-### Frontend
-- **React** - UI framework
-- **Three.js** - 3D rendering
-- **@react-three/fiber** - React renderer for Three.js
-- **@react-three/drei** - Useful helpers for R3F
-- **Vite** - Build tool
-- **Firebase** - Authentication
-
-### Backend
-- **Express.js** - Web server
-- **Node.js** - Runtime
-- **Python** - TTS processing
-- **Edge TTS** - Text-to-speech
-- **Rhubarb Lip Sync** - Lip synchronization
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync) - Lip sync engine
-- [Edge TTS](https://github.com/rany2/edge-tts) - Text-to-speech
-- [Ready Player Me](https://readyplayer.me/) - Avatar creation (if used)
-- [Three.js](https://threejs.org/) - 3D graphics library
-
-## 📧 Contact
-
-For questions or support, please open an issue on GitHub.
-
-## 🎯 Roadmap
-
-- [ ] Multi-language support
-- [ ] Custom avatar upload
-- [ ] Voice cloning
-- [ ] Emotion detection
-- [ ] Screen sharing capability
-- [ ] Mobile app version
+Welcome to the **Digital Human Avatar** project! This is a state-of-the-art conversational AI system that combines a 3D animated frontend with a powerful backend intelligence.
 
 ---
 
-**Made with ❤️ by [Your Name]**
-=======
+## 🌟 Features Overview
+
+| Feature | Technology | Description |
+| :--- | :--- | :--- |
+| **Interactive 3D User Interface** | **React + Three.js** | A high-quality 3D avatar that responds to you in real-time. |
+| **Generative AI Brain** | **Google Gemini** | Uses advanced Large Language Models (LLM) to understand context and provide intelligent replies. |
+| **Voice Cloning (TTS)** | **Edge TTS** | High-quality, neural text-to-speech generation that sounds nearly human. |
+| **Speech Recognition (STT)** | **Whisper AI** | Transcribes your voice into text accurately using OpenAI's Whisper model (running locally). |
+| **Realistic Lip Sync** | **Rhubarb** | Automatically synchronizes the avatar's mouth movements with the generated audio. |
+
 ---
-title: HealAvatar
-emoji: 🐠
-colorFrom: indigo
-colorTo: red
-sdk: static
-pinned: false
-app_build_command: npm run build
-app_file: build/index.html
+
+## 📂 Project Architecture
+
+The project is a "Monorepo" containing both frontend and backend:
+
+*   **`apps/frontend`**:
+    *   Built with Vite, React, and React-Three-Fiber.
+    *   Handles the 3D scene, microphone input, and visualizing the "Thinking" state.
+*   **`apps/backend`**:
+    *   Built with Node.js and Express.
+    *   **Server**: Listens for API requests (`/chat`, `/tts`, `/sts`).
+    *   **Orchestrator**: Calls Python scripts for heavy AI tasks (TTS/STT).
+*   **`apps/backend/utils`**:
+    *   Contains Python scripts (`tts_edge.py`, `stt_whisper.py`) that do the heavy lifting.
+*   **Root Files**:
+    *   `render-build.sh`: A custom script that installs Python, FFmpeg, and Rhubarb on the cloud.
+    *   `start_local_clean.ps1`: One-click script to run everything on Windows.
+
 ---
 
-# Getting Started with Create React App
+## 💻 Local Development Guide (Windows)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Use this section to run the application on your own computer for testing or development.
 
-## Available Scripts
+### 1. Prerequisites (Install These First)
+1.  **Node.js (v18 or higher)**
+    *   Download: [https://nodejs.org/](https://nodejs.org/)
+    *   *Check*: Open terminal and run `node -v`
+2.  **Python (v3.10 or v3.11)**
+    *   Download: [https://www.python.org/downloads/](https://www.python.org/downloads/)
+    *   ⚠️ **CRITICAL**: Check the box **"Add Python to PATH"** in the installer.
+    *   *Check*: Run `python --version`
+3.  **FFmpeg (Required for Audio Processing)**
+    *   Download: [https://www.gyan.dev/ffmpeg/builds/](https://www.gyan.dev/ffmpeg/builds/) (Get the "essentials" build).
+    *   Action: Extract the zip, copy the path to the `bin` folder (e.g., `C:\ffmpeg\bin`), and add it to your System Environment Variables -> Path.
+    *   *Check*: Run `ffmpeg -version`
 
-In the project directory, you can run:
+### 2. Installation Steps
+Open **PowerShell** in the `DocAva` folder and run:
+```powershell
+# 1. Install root dependencies
+npm install
 
-### `npm start`
+# 2. Install Frontend dependencies
+cd apps/frontend
+npm install
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# 3. Install Backend dependencies
+cd ../backend
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# 4. Install Python AI Libraries
+pip install -r requirements.txt
+```
 
-### `npm test`
+### 3. Running the Application
+We have a simplified script that handles everything:
+```powershell
+.\start_local_clean.ps1
+```
+*   This will start the **Backend** (on port 3000).
+*   This will start the **Frontend** (on port 5173).
+*   It will automatically open your browser to `http://localhost:5173`.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## ☁️ Deployment Guide: Publishing to the Web (Self-Hosted via Cloudflare Tunnel)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This is the fastest and easiest way to share your application with the world entirely for **FREE**.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Instead of uploading your code to a slow cloud server, we use a "Tunnel" to securely expose the application running on your powerful local computer to the internet.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Advantages
+*   **Zero Cost**: No server fees.
+*   **High Performance**: Uses your local GPU/CPU (much faster for AI).
+*   **Instant Updates**: Changes you make locally are instantly live.
 
-### `npm run eject`
+### Step-by-Step Guide
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### 1. Requirements
+*   Ensure the application works locally first (see above).
+*   No account signup is strictly required for testing (Quick Tunnels).
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### 2. Start the Public Tunnel
+We have created a specialized script for this. Open PowerShell and run:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```powershell
+.\start_public_test.ps1
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### 3. What Happens Next?
+1.  The script stops any old processes to ensure a clean slate.
+2.  It re-installs/checks Python dependencies.
+3.  It builds the Frontend for production (optimized speed).
+4.  It starts the Backend server.
+5.  **Finally**, it launches a **Cloudflare Tunnel** and gives you a randomly generated URL.
 
-## Learn More
+#### 4. Accessing Your App
+*   Look at the terminal output or the `public_tunnel.log` file.
+*   Find the **Public URL**, which looks like:
+    `https://random-words-here.trycloudflare.com`
+*   **Share this link**! Anyone can open it on their phone or laptop to chat with your avatar.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### 5. Important Notes
+*   **Keep the Window Open**: If you close the PowerShell window, the website goes down.
+*   **Temporary URL**: The URL changes every time you restart the script. (To get a permanent URL, you need a free Cloudflare account and use `cloudflared login`).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🛠 Troubleshooting & Maintenance
 
-### Analyzing the Bundle Size
+### Common Deployment Errors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**1. "Permission Denied" on `./render-build.sh`**
+*   **Cause**: The script file lost its executable permission in Git.
+*   **Fix**: Run this locally in Git Bash: `git update-index --chmod=+x render-build.sh`, then commit and push.
 
-### Making a Progressive Web App
+**2. "ModuleNotFoundError: No module named 'edge_tts' or 'faster_whisper'"**
+*   **Cause**: The Python packages installed in the build step aren't being found.
+*   **Fix**: Ensure your `Build Command` is exactly `./render-build.sh`. This script installs packages to a local `pylib` folder, which the server uses.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**3. "FFmpeg not found"**
+*   **Cause**: FFmpeg static build failed to download or extract.
+*   **Fix**: Check the build logs. We download a static Linux binary of FFmpeg. If the download URL changed, update `render-build.sh`.
 
-### Advanced Configuration
+### Modifying the Avatar
+*   To change the 3D model, replace `apps/frontend/public/models/avatar.glb`.
+*   Ensure the expanded GLB file has the required Morph Targets (`viseme_aa`, `viseme_E`, etc.) compatible with the RPM standard.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
->>>>>>> 601fb1de6c4d68f8dbc1519e0193a88cdb8675f0
+## 📜 License
+This project is open-source. Feel free to use and modify!

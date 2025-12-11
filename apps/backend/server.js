@@ -9,7 +9,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+// Explicitly load .env from apps/backend directory
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -88,10 +89,14 @@ app.post("/tts", async (req, res) => {
   }
 
   try {
+    const pipelineStart = performance.now();
+    console.log("--- Starting Inference Pipeline (TTS Only) ---");
     console.log(`Received message: ${userMessage} from user: ${userId}`);
 
     // 1. Get Chat Response from Custom API
+    const llmStart = performance.now();
     const botResponseText = await customAPI.chat(userMessage, userId);
+    console.log(`[Timing] LLM (Chat): ${(performance.now() - llmStart).toFixed(2)}ms`); // LLM End
     console.log(`Bot response: ${botResponseText}`);
 
     // 2. Construct Message Object
@@ -110,9 +115,16 @@ app.post("/tts", async (req, res) => {
     ];
 
     // 3. Generate Audio & LipSync
+    const lipSyncStart = performance.now();
     const syncedMessages = await lipSync({ messages });
+    console.log(`[Timing] TTS + LipSync Wrapper: ${(performance.now() - lipSyncStart).toFixed(2)}ms`);
 
     console.log("Sending response to frontend...");
+
+    const pipelineEnd = performance.now();
+    console.log(`[Timing] ⏱️ TOTAL PIPELINE TIME: ${(pipelineEnd - pipelineStart).toFixed(2)}ms`);
+    console.log("--------------------------------------------------");
+
     res.send({ messages: syncedMessages, userMessage });
   } catch (error) {
     console.error("Error in /tts:", error);
@@ -132,17 +144,26 @@ app.post("/sts", async (req, res) => {
   const audioData = Buffer.from(base64Audio, "base64");
 
   try {
+    const pipelineStart = performance.now();
+    console.log("--- Starting Inference Pipeline (STS) ---");
+
     // 1. Convert Speech to Text
+    const sttStart = performance.now();
     const userMessage = await customAPI.stt(audioData);
+    console.log(`[Timing] STT (Whisper): ${(performance.now() - sttStart).toFixed(2)}ms`); // STT End
     console.log(`User said (STT): ${userMessage}`);
 
     // 2. Get Chat Response
+    const llmStart = performance.now();
     const botResponseText = await customAPI.chat(userMessage, userId);
+    console.log(`[Timing] LLM (Chat): ${(performance.now() - llmStart).toFixed(2)}ms`); // LLM End
     console.log(`Bot response: ${botResponseText}`);
 
     // 3. Construct Message Object
+    const animStart = performance.now();
     const selectedAnimation = selectAnimation(botResponseText);
     const selectedExpression = selectFacialExpression(botResponseText);
+    // console.log(`[Timing] Animation Logic: ${(performance.now() - animStart).toFixed(2)}ms`); // Usually neglible
 
     console.log(`Selected animation: ${selectedAnimation}, expression: ${selectedExpression}`);
 
@@ -155,9 +176,17 @@ app.post("/sts", async (req, res) => {
     ];
 
     // 4. Generate Audio & LipSync
+    const lipSyncStart = performance.now();
     const syncedMessages = await lipSync({ messages });
+    const lipSyncTime = performance.now() - lipSyncStart;
+    console.log(`[Timing] TTS + LipSync Wrapper: ${lipSyncTime.toFixed(2)}ms`);
 
     console.log("Sending STS response to frontend...");
+
+    const pipelineEnd = performance.now();
+    console.log(`[Timing] ⏱️ TOTAL PIPELINE TIME: ${(pipelineEnd - pipelineStart).toFixed(2)}ms`);
+    console.log("-----------------------------------------");
+
     res.send({ messages: syncedMessages, userMessage });
   } catch (error) {
     console.error("Error in /sts:", error);

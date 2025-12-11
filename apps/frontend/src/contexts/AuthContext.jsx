@@ -20,6 +20,12 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     async function signup(email, password, name, username) {
+        if (!auth) {
+            console.warn("⚠️ Firebase unavailable. Creating dummy user.");
+            const dummyUser = { uid: "dummy-user-123", email, displayName: name };
+            setCurrentUser(dummyUser);
+            return { user: dummyUser };
+        }
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
@@ -46,10 +52,20 @@ export function AuthProvider({ children }) {
     }
 
     function login(email, password) {
+        if (!auth) {
+            console.warn("⚠️ Firebase unavailable. Logging in as dummy user.");
+            const dummyUser = { uid: "dummy-user-123", email, displayName: "Demo User" };
+            setCurrentUser(dummyUser);
+            return Promise.resolve({ user: dummyUser });
+        }
         return signInWithEmailAndPassword(auth, email, password);
     }
 
     function logout() {
+        if (!auth) {
+            setCurrentUser(null);
+            return Promise.resolve();
+        }
         return signOut(auth);
     }
 
