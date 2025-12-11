@@ -145,8 +145,9 @@ export function Avatar(props) {
       lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
 
 
-      const armRotZ = 0;
-      const armRotX = 1.3;
+      // Arms straight down in natural standing position
+      const armRotZ = 0; // Side rotation
+      const armRotX = 1.3; // Forward/back rotation - 0 = straight down, 1.3 = bent forward
 
       // Safe update helper
       const safeRot = (node, x, y, z) => {
