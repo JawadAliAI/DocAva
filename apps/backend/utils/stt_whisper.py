@@ -14,7 +14,7 @@ def transcribe(audio_path, model_size="small"):
     # Run on CPU with INT8 quantization for broad compatibility and speed
     # If GPU is available and drivers are set, one could use device="cuda"
     try:
-        model = WhisperModel(model_size, device="cpu", compute_type="int8")
+        model = WhisperModel(model_size, device="cuda", compute_type="int8")
     except Exception as e:
         print(f"Error loading model: {e}", file=sys.stderr)
         sys.exit(1)
